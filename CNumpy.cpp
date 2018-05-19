@@ -111,35 +111,10 @@ public:
 
     return Result;
   }
+  /*
   NumpyMatrix operator+=(NumpyMatrix M2){
-    int M1rows = this->rows();
-    int M1cols = this->cols();
-
-    int M2rows = M2.rows();
-    int M2cols = M2.cols();
-
-    std::vector<std::vector<T>> temp(M1rows, std::vector<T>(M2cols));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
-
-    try{
-      if(M1rows == M2rows && M1columns == M2columns){
-        for(int row = 0; row < M1rows; row++){
-          for(int col = 0; col < M2columns; col++){
-            Result.init[row][col] = (this->init)[row][col] - M2.init[row][col];
-          }
-        }
-        return Result;
-      }
-      else{
-        throw mre;
-      }
-    }
-    catch(std::exception& e){
-      std::cout << e.what() << std::endl;
-    }
   }
-
+*/
   NumpyMatrix dot(const NumpyMatrix& M1, const NumpyMatrix& M2){
     int M1rows = (M1.init).size();
     int M1columns = (M1.init)[0].size();

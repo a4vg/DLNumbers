@@ -99,6 +99,6 @@ void neuralNetwork::train(std::vector<double>inputs, std::vector<double>targets)
 
   NumpyMatrix<double> hidden_errors = ((this->who).Transpose())*output_errors;
 //self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
-  (this->who) +=  dot((output_errors * final_outputs * (NMfull(final_outputs.rows(), final_outputs.cols(), 1.0) - final_outputs)), hidden_outputs.Transpose()) * (this->lr);
+//(this->who) +=  dot((output_errors * final_outputs * (NMfull(final_outputs.rows(), final_outputs.cols(), 1.0) - final_outputs)), hidden_outputs.Transpose()) * (this->lr);
 
 }

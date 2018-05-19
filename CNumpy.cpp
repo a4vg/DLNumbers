@@ -5,21 +5,40 @@
 #include <exception>
 #include <type_traits>
 
-
+// Defining Error class
 class MatrixRangeError: public std::exception{
   virtual const char* what()const throw(){
     return "Error: check compatibility between rows and columns of both matrices";
   }
 }mre;
 
-
+// Template allows only arithmetic types (float, double, int, etc) for typename T
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
+/*
+NumpyMatrix is simply a class containing a 2d vector which aim is
+to simplify matrix operations.
+*/
 class NumpyMatrix{
 public:
+  // True Matrix
   std::vector<std::vector<T>> init;
+
+  NumpyMatrix(){}
+  NumpyMatrix(std::vector<std::vector<T>> vector){
+    this->init = vector;
+  }
+  NumpyMatrix(T rows, T cols){
+    std::vector<std::vector<T>> temp(rows, std::vector<T>(cols));
+    this->init = temp;
+  }
+  NumpyMatrix(T rows, T cols, T number){
+    std::vector<std::vector<T>> temp(rows, std::vector<T>(cols, number));
+    this->init = temp;
+  }
+  // Just a print function obj.print()
   void print(){
-    int mrows = (this->init).size();
-    int mcols = (this->init)[0].size();
+    int mrows = this->rows();
+    int mcols = this->cols();
     for(int row = 0; row < mrows; row++){
       for(int col = 0; col < mcols; col++){
         std::cout<<(this->init)[row][col] << " ";
@@ -27,27 +46,31 @@ public:
       std::cout<<"\n";
     }
   }
+  // Fills current NumpyMatrix with given number
   void full(int rows, int cols, T number){
     std::vector<std::vector<T>> temp(rows, std::vector<T>(cols, number));
     this->init = temp;
   }
+  // Returns number of rows of current matrix
   T rows(){
     return((this->init).size());
   }
+  // Returns number of columns of current matrix
   T cols(){
     return((this->init)[0].size());
   }
+  // Overloads operator* to simplify matrix multiplication
   NumpyMatrix operator*(const NumpyMatrix& M2){
-    int M1rows = (this->init).size();
-    int M1columns = (this->init)[0].size();
+    int M1rows = this->rows();
+    int M1columns = this->cols();
 
-    int M2rows = (M2.init).size();
-    int M2columns = (M2.init)[0].size();
+    int M2rows = M2.rows();
+    int M2columns = M2.cols();
 
-    std::vector<std::vector<T>> temp(M1rows, std::vector<T>(M2columns));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
-
+    // creates empty result matrix with m1rows as n rows and m2columns as n columns
+    NumpyMatrix<T> Result(M1rows, M2columns);
+    // Handles error if m1cols and m2rows don't match
+    // I don't know much about errors and exceptions, fix it if it needs to
     try{
       if(M1columns == M2rows){
         int inner = M1columns;
@@ -68,16 +91,16 @@ public:
       std::cout << e.what() << std::endl;
     }
   }
+
+  // Overloads operator-
   NumpyMatrix operator-(const NumpyMatrix& M2){
-    int M1rows = (this->init).size();
-    int M1columns = (this->init)[0].size();
+    int M1rows = this->rows();
+    int M1columns = this->cols();
 
-    int M2rows = (M2.init).size();
-    int M2columns = (M2.init)[0].size();
+    int M2rows = M2.rows();
+    int M2columns = M2.cols();
 
-    std::vector<std::vector<T>> temp(M1rows, std::vector<T>(M2columns));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
+    NumpyMatrix<T> Result(M1rows, M2columns);
 
     try{
       if(M1rows == M2rows && M1columns == M2columns){
@@ -96,12 +119,11 @@ public:
       std::cout << e.what() << std::endl;
     }
   }
+  // Defines multiplication between Matrix and scalar
   NumpyMatrix operator*(T scalar){
-    int Mrows = (this->init).size();
-    int Mcolumns = (this->init)[0].size();
-    std::vector<std::vector<T>> temp(Mrows, std::vector<T>(Mcolumns));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
+    int Mrows = this->rows();
+    int Mcolumns = this->cols();
+    NumpyMatrix<T> Result(Mrows, Mcolumns);
 
     for(int row = 0; row < Mrows; row++){
       for(int col = 0; col < Mcolumns; col++){
@@ -111,47 +133,16 @@ public:
 
     return Result;
   }
+  // Needs to be done
   /*
   NumpyMatrix operator+=(NumpyMatrix M2){
   }
 */
-  NumpyMatrix dot(const NumpyMatrix& M1, const NumpyMatrix& M2){
-    int M1rows = (M1.init).size();
-    int M1columns = (M1.init)[0].size();
-
-    int M2rows = (M2.init).size();
-    int M2columns = (M2.init)[0].size();
-
-    std::vector<std::vector<T>> temp(M1rows, std::vector<T>(M2columns));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
-
-    try{
-      if(M1columns == M2rows){
-        int inner = M1columns;
-        for(int row = 0; row < M1rows; row++){
-          for(int col = 0; col < M2columns; col++){
-            for(int i = 0; i < inner; i++){
-              (Result.init)[row][col] += (M1.init)[row][i] * (M2.init)[i][col];
-            }
-          }
-        }
-        return Result;
-      }
-      else{
-        throw mre;
-      }
-    }
-    catch(std::exception& e){
-      std::cout << e.what() << std::endl;
-    }
-  }
+// Transposes current NumpyMatrix
   NumpyMatrix Transpose(){
-    int Mrows = (this->init).size();
-    int Mcolumns = (this->init)[0].size();
-    std::vector<std::vector<T>> temp(Mcolumns, std::vector<T>(Mrows));
-    NumpyMatrix<T> Result;
-    Result.init = temp;
+    int Mrows = this->rows();
+    int Mcolumns = this->cols();
+    NumpyMatrix<T> Result(Mcolumns, Mrows);
 
     for(int row = 0; row < Mrows; row++){
       for(int col = 0; col < Mcolumns; col++){
@@ -161,18 +152,19 @@ public:
     return Result;
   }
 };
+// outside function to deal with matrix multiplication
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 NumpyMatrix<T> dot(const NumpyMatrix<T>& M1, const NumpyMatrix<T>& M2){
-  int M1rows = (M1.init).size();
-  int M1columns = (M1.init)[0].size();
+  int M1rows = M1.rows();
+  int M1columns = M1.cols();
 
-  int M2rows = (M2.init).size();
-  int M2columns = (M2.init)[0].size();
+  int M2rows = M2.rows();
+  int M2columns = M2.cols();
 
-  std::vector<std::vector<T>> temp(M1rows, std::vector<T>(M2columns));
-  NumpyMatrix<T> Result;
-  Result.init = temp;
-
+  // creates empty result matrix with m1rows as n rows and m2columns as n columns
+  NumpyMatrix<T> Result(M1rows, M2columns);
+  // Handles error if m1cols and m2rows don't match
+  // I don't know much about errors and exceptions, fix it if it needs to
   try{
     if(M1columns == M2rows){
       int inner = M1columns;
@@ -193,10 +185,11 @@ NumpyMatrix<T> dot(const NumpyMatrix<T>& M1, const NumpyMatrix<T>& M2){
     std::cout << e.what() << std::endl;
   }
 }
+// Overloads operator <<, simplifies matrix printing
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 std::ostream& operator<<(std::ostream& os, const NumpyMatrix<T>& NM){
-  int mrows = (NM.init).size();
-  int mcols = (NM.init)[0].size();
+  int mrows = NM.rows();
+  int mcols = NM.cols();
   for(int row = 0; row < mrows; row++){
     for(int col = 0; col < mcols; col++){
       os<<(NM.init)[row][col] << " ";
@@ -205,9 +198,10 @@ std::ostream& operator<<(std::ostream& os, const NumpyMatrix<T>& NM){
   }
   return os;
 }
-
+// Outside function that returns NumpyMatrix containing normal distribution random values
+// given mean, double, rows and cols
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-NumpyMatrix<T> random_normal(T mean, double stdev, int rows, int cols){
+NumpyMatrix<T> random_normal(T mean, T stdev, int rows, int cols){
   std::random_device rd{};
   std::mt19937 gen{rd()};
   NumpyMatrix<T> result;
@@ -224,12 +218,10 @@ NumpyMatrix<T> random_normal(T mean, double stdev, int rows, int cols){
   return result;
 
 }
-
+// Outside function that returns filled NumpyMatrix given rows, cols and number
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 NumpyMatrix<T> NMfull(T rows, T cols, T number){
-  std::vector<std::vector<T>> temp(rows, std::vector<T>(cols, number));
-  NumpyMatrix<T> Result;
-  Result.init = temp;
+  NumpyMatrix<T> Result(rows, cols, number);
   return Result;
 }
 /*

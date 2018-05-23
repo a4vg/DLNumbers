@@ -224,6 +224,20 @@ NumpyMatrix<T> NMfull(T rows, T cols, T number){
   NumpyMatrix<T> Result(rows, cols, number);
   return Result;
 }
+template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
+NumpyMatrix<T> operator*(T scalar, const NumpyMatrix<T>& NM){
+  int Mrows = NM.rows();
+  int Mcolumns = NM.cols();
+  NumpyMatrix<T> Result(Mrows, Mcolumns);
+
+  for(int row = 0; row < Mrows; row++){
+    for(int col = 0; col < Mcolumns; col++){
+      (Result.init)[row][col] = (NM.init)[row][col]*scalar;
+    }
+  }
+
+  return Result;
+}
 /*
 int main(int argc, char const *argv[]) {
   NumpyMatrix<int> M1;

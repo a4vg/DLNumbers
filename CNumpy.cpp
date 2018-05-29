@@ -52,15 +52,45 @@ public:
     this->init = temp;
   }
   // Returns number of rows of current matrix
-  T rows(){
+  int rows() const{
     return((this->init).size());
   }
   // Returns number of columns of current matrix
-  T cols(){
+  int cols() const{
     return((this->init)[0].size());
   }
+
+  // Defines multiplication between Matrix and scalar
+  NumpyMatrix operator*(const T& scalar) const{
+    int Mrows = this->rows();
+    int Mcolumns = this->cols();
+    NumpyMatrix<T> Result(Mrows, Mcolumns);
+
+    for(int row = 0; row < Mrows; row++){
+      for(int col = 0; col < Mcolumns; col++){
+        (Result.init)[row][col] = (this->init)[row][col]*scalar;
+      }
+    }
+
+    return Result;
+  }
+
+  NumpyMatrix<T>& operator*=(const T& scalar){
+    int Mrows = this->rows();
+    int Mcolumns = this->cols();
+
+    for(int row = 0; row < Mrows; row++){
+      for(int col = 0; col < Mcolumns; col++){
+        (this->init)[row][col] *= (this->init)[row][col]*scalar;
+      }
+    }
+
+    return *this;
+  }
+
+
   // Overloads operator* to simplify matrix multiplication
-  NumpyMatrix operator*(const NumpyMatrix& M2){
+  NumpyMatrix<T> operator*(NumpyMatrix const &M2) const{
     int M1rows = this->rows();
     int M1columns = this->cols();
 
@@ -91,9 +121,35 @@ public:
       std::cout << e.what() << std::endl;
     }
   }
+  // Overloads operator+
+  NumpyMatrix<T> operator+(const NumpyMatrix& M2) const{
+    int M1rows = this->rows();
+    int M1columns = this->cols();
 
+    int M2rows = M2.rows();
+    int M2columns = M2.cols();
+
+    NumpyMatrix<T> Result(M1rows, M2columns);
+
+    try{
+      if(M1rows == M2rows && M1columns == M2columns){
+        for(int row = 0; row < M1rows; row++){
+          for(int col = 0; col < M2columns; col++){
+            Result.init[row][col] = (this->init)[row][col] + M2.init[row][col];
+          }
+        }
+        return Result;
+      }
+      else{
+        throw mre;
+      }
+    }
+    catch(std::exception& e){
+      std::cout << e.what() << std::endl;
+    }
+  }
   // Overloads operator-
-  NumpyMatrix operator-(const NumpyMatrix& M2){
+  NumpyMatrix<T> operator-(const NumpyMatrix& M2) const{
     int M1rows = this->rows();
     int M1columns = this->cols();
 
@@ -119,25 +175,30 @@ public:
       std::cout << e.what() << std::endl;
     }
   }
-  // Defines multiplication between Matrix and scalar
-  NumpyMatrix operator*(T scalar){
+
+  NumpyMatrix<T>& operator+=(const NumpyMatrix M2){
     int Mrows = this->rows();
-    int Mcolumns = this->cols();
-    NumpyMatrix<T> Result(Mrows, Mcolumns);
-
+    int Mcols = this->cols();
     for(int row = 0; row < Mrows; row++){
-      for(int col = 0; col < Mcolumns; col++){
-        (Result.init)[row][col] = (this->init)[row][col]*scalar;
-      }
+        for(int col = 0; col < Mcols; col++){
+            (this->init)[row][col] += M2.init[row][col];
+        }
     }
+    return *this;
 
-    return Result;
   }
-  // Needs to be done
-  /*
-  NumpyMatrix operator+=(NumpyMatrix M2){
+  NumpyMatrix<T>& operator-=(NumpyMatrix M2){
+    int Mrows = this->rows();
+    int Mcols = this->cols();
+    for(int row = 0; row < Mrows; row++){
+        for(int col = 0; col < Mcols; col++){
+            (this->init)[row][col] -= M2.init[row][col];
+        }
+    }
+    return *this;
+
   }
-*/
+
 // Transposes current NumpyMatrix
   NumpyMatrix Transpose(){
     int Mrows = this->rows();
@@ -152,6 +213,8 @@ public:
     return Result;
   }
 };
+
+
 // outside function to deal with matrix multiplication
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 NumpyMatrix<T> dot(const NumpyMatrix<T>& M1, const NumpyMatrix<T>& M2){
@@ -220,7 +283,7 @@ NumpyMatrix<T> random_normal(T mean, T stdev, int rows, int cols){
 }
 // Outside function that returns filled NumpyMatrix given rows, cols and number
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
-NumpyMatrix<T> NMfull(T rows, T cols, T number){
+NumpyMatrix<T> NMfull(int rows, int cols, T number){
   NumpyMatrix<T> Result(rows, cols, number);
   return Result;
 }

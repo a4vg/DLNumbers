@@ -50,11 +50,6 @@ neuralNetwork::neuralNetwork(double inputnodes, double hiddennodes, double outpu
   this->who = random_normal(0.0, pow(hiddennodes, -0.5), outputnodes, hiddennodes);
 }
 
-int main(int argc, char const *argv[]) {
-  neuralNetwork NN(2, 2, 2, 0.5);
-  std::cout<< (*NN.activation_function)(0.2)<<std::endl;
-  return 0;
-}
 void neuralNetwork::train(std::vector<double>inputs, std::vector<double>targets){
   // codigo feazo pero funcional :^(
   NumpyMatrix<double> inputsM;
@@ -69,7 +64,7 @@ void neuralNetwork::train(std::vector<double>inputs, std::vector<double>targets)
   targetsM.init = tempt;
   targetsM = targetsM.Transpose();
 
-  NumpyMatrix<double> hidden_inputs = (this->wih)*inputsM;
+  NumpyMatrix<double> hidden_inputs = this->wih * inputsM;
   // *******
 
   NumpyMatrix<double> hidden_outputs;
@@ -85,7 +80,7 @@ void neuralNetwork::train(std::vector<double>inputs, std::vector<double>targets)
   // ********
   // idea: overloading the operator () -> simplicity
   // python: hidden_outputs = self.activation_function(hidden_inputs)
-  NumpyMatrix<double> final_inputs = who * hidden_outputs;
+  NumpyMatrix<double> final_inputs = this->who * hidden_outputs;
   NumpyMatrix<double> final_outputs;
   int rows2 = hidden_inputs.init.size();
   int cols2 = (hidden_inputs.init)[0].size();
@@ -98,7 +93,20 @@ void neuralNetwork::train(std::vector<double>inputs, std::vector<double>targets)
   NumpyMatrix<double> output_errors = targetsM - final_outputs;
 
   NumpyMatrix<double> hidden_errors = ((this->who).Transpose())*output_errors;
-//self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
-//(this->who) +=  dot((output_errors * final_outputs * (NMfull(final_outputs.rows(), final_outputs.cols(), 1.0) - final_outputs)), hidden_outputs.Transpose()) * (this->lr);
+  (this->who) += dot((output_errors * final_outputs * (NMfull(final_outputs.rows(), final_outputs.cols(), 1.0) - final_outputs)), hidden_outputs.Transpose()) * (this->lr);
 
+}
+
+int main(int argc, char const *argv[]) {
+  /*
+  NumpyMatrix<int> A(3,3, 1);
+  NumpyMatrix<int> B(3,3, 2);
+  NumpyMatrix<int> C;
+  */
+  NumpyMatrix<int> A(3,3, 1);
+  NumpyMatrix<int> B(3,3, 2);
+  NumpyMatrix<int> C;
+
+  std::cout << A;
+  return 0;
 }

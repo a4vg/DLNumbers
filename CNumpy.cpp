@@ -27,6 +27,16 @@ public:
   NumpyMatrix(std::vector<std::vector<T>> vector){
     this->init = vector;
   }
+  NumpyMatrix(std::vector<T> &v){
+    int cols = 1;
+    int rows = v.size();
+    std::vector<std::vector<T>> temp(rows, std::vector<T>(cols));
+    for(int row = 0; row < rows; row++){
+        temp[row][0] = v.at(row);
+
+    }
+    this->init = temp;
+  }
   NumpyMatrix(T rows, T cols){
     std::vector<std::vector<T>> temp(rows, std::vector<T>(cols));
     this->init = temp;
@@ -35,6 +45,7 @@ public:
     std::vector<std::vector<T>> temp(rows, std::vector<T>(cols, number));
     this->init = temp;
   }
+  //~NumpyMatrix();
   // Just a print function obj.print()
   void print(){
     int mrows = this->rows();
@@ -102,13 +113,10 @@ public:
     // Handles error if m1cols and m2rows don't match
     // I don't know much about errors and exceptions, fix it if it needs to
     try{
-      if(M1columns == M2rows){
-        int inner = M1columns;
+      if(M1columns == M2columns && M1rows == M2rows){
         for(int row = 0; row < M1rows; row++){
           for(int col = 0; col < M2columns; col++){
-            for(int i = 0; i < inner; i++){
-              (Result.init)[row][col] += (this->init)[row][i] * (M2.init)[i][col];
-            }
+              (Result.init)[row][col] = (this->init)[row][col] * (M2.init)[row][col];
           }
         }
         return Result;
@@ -207,13 +215,12 @@ public:
 
     for(int row = 0; row < Mrows; row++){
       for(int col = 0; col < Mcolumns; col++){
-        (Result.init)[row][col] = (this->init)[col][row];
+        (Result.init)[col][row] = (this->init)[row][col];
       }
     }
     return Result;
   }
 };
-
 
 // outside function to deal with matrix multiplication
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
@@ -287,6 +294,8 @@ NumpyMatrix<T> NMfull(int rows, int cols, T number){
   NumpyMatrix<T> Result(rows, cols, number);
   return Result;
 }
+
+
 template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 NumpyMatrix<T> operator*(T scalar, const NumpyMatrix<T>& NM){
   int Mrows = NM.rows();

@@ -56,13 +56,15 @@ class neuralNetwork:
         pass
 
     def query(self, inputs_list):
+        print(self.wih)
         # convert inputs list to 2d array
         inputs = numpy.array(inputs_list, ndmin=2).T
         # calculate signals into hidden layer
         hidden_inputs = numpy.dot(self.wih, inputs)
+        print(hidden_inputs)
         # calculate the signals emerging from hidden layer
         hidden_outputs = self.activation_function(hidden_inputs)
-
+        print(hidden_outputs)
         # calculate signals into final output layer
         final_inputs = numpy.dot(self.who, hidden_outputs)
         # calculate the signals emerging from final output layer
@@ -71,6 +73,13 @@ class neuralNetwork:
         return final_outputs
 
 if __name__ == '__main__':
-    N = neuralNetwork(3, 3, 3, 0.5)
+    input_nodes = 3
+    hidden_nodes = 3
+    output_nodes = 3
 
-    N.train([1,2,3], [4,5,6])
+    # learning rate is 0.3
+    learning_rate = 0.3
+
+    # create instance of neural network
+    n = neuralNetwork(input_nodes,hidden_nodes,output_nodes, learning_rate)
+    print(n.query([1.0, 0.5, -1.5]))

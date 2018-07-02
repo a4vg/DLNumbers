@@ -28,14 +28,12 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     instrucciones.cpp \
-    draw.cpp \
-    mygraphics.cpp
+    draw.cpp
 
 HEADERS += \
         mainwindow.h \
     instrucciones.h \
-    draw.h \
-    mygraphics.h
+    draw.h
 
 FORMS += \
         mainwindow.ui \

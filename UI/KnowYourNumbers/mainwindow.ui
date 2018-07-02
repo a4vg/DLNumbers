@@ -48,6 +48,9 @@
     <property name="text">
      <string>Begin</string>
     </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
    </widget>
    <widget class="QLabel" name="knowyourlogo">
     <property name="geometry">

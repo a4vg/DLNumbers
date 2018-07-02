@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QPixmap>
+#include <QDir>
 #include "instrucciones.h"
 #include "draw.h"
 #include "mygraphics.h"
@@ -10,7 +11,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QPixmap pix("/Users/andrea/Desktop/KnowYourNumbers/KnowYourLogo.png");
+    QPixmap pix(QDir::currentPath() + "/../../../KnowYourLogo.png");
+   //qDebug() << (QDir::currentPath()) + "/../../../KnowYourLogo.png";
+
+
     ui->knowyourlogo->setPixmap(pix);
 }
 
@@ -28,7 +32,8 @@ void MainWindow::on_beginbutton_clicked()
     //d.exec();
 
 
-    MyGraphics g;
+    //MyGraphics g;
+    draw g;
     g.setModal(true);
     g.exec();
 
